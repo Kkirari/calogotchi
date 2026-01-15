@@ -12,6 +12,16 @@ class _AgePageState extends State<AgePage> {
   double _age = 30;
 
   @override
+  void initState() {
+    super.initState();
+    // ส่งค่า default ไปเลยตอนเริ่ม
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onSubmitted(_age.round());
+      print("LOG: Default age submitted = ${_age.round()}");
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1a1a2e),
@@ -44,7 +54,6 @@ class _AgePageState extends State<AgePage> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Highlight box ตรงกลาง
                       Container(
                         height: 80,
                         width: 150,
@@ -57,7 +66,6 @@ class _AgePageState extends State<AgePage> {
                           ),
                         ),
                       ),
-                      // Wheel picker
                       SizedBox(
                         height: 300,
                         child: ListWheelScrollView.useDelegate(
@@ -71,7 +79,9 @@ class _AgePageState extends State<AgePage> {
                           onSelectedItemChanged: (index) {
                             setState(() {
                               _age = (index + 10).toDouble();
-                              widget.onSubmitted(_age.round());
+                              final selectedAge = _age.round();
+                              widget.onSubmitted(selectedAge);
+                              print("LOG: Age selected = $selectedAge");
                             });
                           },
                           childDelegate: ListWheelChildBuilderDelegate(
@@ -99,7 +109,6 @@ class _AgePageState extends State<AgePage> {
                           ),
                         ),
                       ),
-                      // Label "years old"
                       Positioned(
                         right: 30,
                         child: Text(

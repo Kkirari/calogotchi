@@ -93,6 +93,9 @@ class _ActivityPageState extends State<ActivityPage> {
                         setState(() {
                           selectedActivity = activity['value'];
                           widget.onSelected(activity['value']);
+                          print(
+                            "LOG: Activity selected = ${activity['value']}",
+                          );
                         });
                       },
                     );
@@ -160,7 +163,6 @@ class _ActivityCard extends StatelessWidget {
                   color: isSelected ? Colors.white : Colors.white70,
                 ),
               ),
-
               const SizedBox(height: 4),
               Text(
                 subtitle,

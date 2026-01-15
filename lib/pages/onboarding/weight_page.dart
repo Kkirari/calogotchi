@@ -12,6 +12,16 @@ class _WeightPageState extends State<WeightPage> {
   double _weight = 70;
 
   @override
+  void initState() {
+    super.initState();
+    // ส่งค่า default ไปเลยตอนเริ่ม
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onSubmitted(_weight);
+      print("LOG: Default weight submitted = $_weight");
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1a1a2e),
@@ -72,6 +82,7 @@ class _WeightPageState extends State<WeightPage> {
                             setState(() {
                               _weight = (index + 30).toDouble();
                               widget.onSubmitted(_weight);
+                              print("LOG: Weight selected = $_weight");
                             });
                           },
                           childDelegate: ListWheelChildBuilderDelegate(

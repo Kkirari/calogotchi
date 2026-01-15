@@ -11,6 +11,14 @@ class GenderPage extends StatefulWidget {
 class _GenderPageState extends State<GenderPage> {
   String? selectedGender;
 
+  void _selectGender(String gender) {
+    setState(() {
+      selectedGender = gender;
+    });
+    widget.onSelected(gender); // ✅ ส่งค่าไป OnboardingFlow
+    print("LOG: Gender selected = $gender"); // ✅ log
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,46 +49,32 @@ class _GenderPageState extends State<GenderPage> {
               const SizedBox(height: 60),
               Expanded(
                 child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Row(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _GenderCard(
-                              icon: Icons.male,
-                              label: 'Male',
-                              isSelected: selectedGender == 'Male',
-                              selectedColor: const Color(0xFF4A90E2),
-                              onTap: () {
-                                setState(() {
-                                  selectedGender = 'Male';
-                                });
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: _GenderCard(
-                              icon: Icons.female,
-                              label: 'Female',
-                              isSelected: selectedGender == 'Female',
-                              selectedColor: const Color(0xFFE91E63),
-                              onTap: () {
-                                setState(() {
-                                  selectedGender = 'Female';
-                                });
-                              },
-                            ),
-                          ),
-                        ],
+                      Expanded(
+                        child: _GenderCard(
+                          icon: Icons.male,
+                          label: 'Male',
+                          isSelected: selectedGender == 'Male',
+                          selectedColor: const Color(0xFF4A90E2),
+                          onTap: () => _selectGender('Male'),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: _GenderCard(
+                          icon: Icons.female,
+                          label: 'Female',
+                          isSelected: selectedGender == 'Female',
+                          selectedColor: const Color(0xFFE91E63),
+                          onTap: () => _selectGender('Female'),
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
               const SizedBox(height: 150),
-              const SizedBox(height: 20),
             ],
           ),
         ),

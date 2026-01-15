@@ -12,6 +12,16 @@ class _HeightPageState extends State<HeightPage> {
   double _height = 170;
 
   @override
+  void initState() {
+    super.initState();
+    // ส่งค่า default ไปเลยตอนเริ่ม
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onSubmitted(_height);
+      print("LOG: Default height submitted = $_height");
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1a1a2e),
@@ -72,6 +82,7 @@ class _HeightPageState extends State<HeightPage> {
                             setState(() {
                               _height = (index + 100).toDouble();
                               widget.onSubmitted(_height);
+                              print("LOG: Height selected = $_height");
                             });
                           },
                           childDelegate: ListWheelChildBuilderDelegate(

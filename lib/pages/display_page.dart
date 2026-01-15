@@ -20,6 +20,7 @@ class DisplayPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           final data = snapshot.data;
+          print("LOG: Loaded userData = $data");
           if (data == null) {
             return const Center(child: Text('ยังไม่มีข้อมูล'));
           }

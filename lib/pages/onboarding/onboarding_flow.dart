@@ -31,6 +31,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
     } else {
       // save data
       await UserPrefs.saveUserData(_userData);
+      print("LOG: Saved userData = $_userData");
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
