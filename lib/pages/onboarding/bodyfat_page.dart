@@ -10,7 +10,7 @@ class BodyFatPage extends StatefulWidget {
 
 class _BodyFatPageState extends State<BodyFatPage> {
   double _bodyFat = 20;
-  bool _isUnknown = false; // ตัวแปรเก็บสถานะว่าไม่ทราบค่าหรือไม่
+  bool _isUnknown = false;
 
   @override
   void initState() {
@@ -30,12 +30,7 @@ class _BodyFatPageState extends State<BodyFatPage> {
   }
 
   Color _getBodyColor() {
-    if (_bodyFat < 10) return const Color(0xFF00d2ff);
-    if (_bodyFat < 15) return const Color(0xFF4A90E2);
-    if (_bodyFat < 20) return const Color(0xFF6c5ce7);
-    if (_bodyFat < 25) return const Color(0xFFffa502);
-    if (_bodyFat < 30) return const Color(0xFFff6348);
-    return const Color(0xFFe74c3c);
+    return const Color(0xFFFFC107); // ✅ accent เหลืองสด
   }
 
   String _getBodyStatus() {
@@ -50,7 +45,7 @@ class _BodyFatPageState extends State<BodyFatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1a1a2e),
+      backgroundColor: const Color(0xFFFFFBF5), // ✅ พื้นหลังขาวนวล
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -63,7 +58,7 @@ class _BodyFatPageState extends State<BodyFatPage> {
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w300,
-                  color: Colors.white70,
+                  color: Color(0xFF8D6E63), // ✅ น้ำตาลอ่อน
                 ),
               ),
               const Text(
@@ -71,7 +66,7 @@ class _BodyFatPageState extends State<BodyFatPage> {
                 style: TextStyle(
                   fontSize: 42,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Color(0xFF5D4037), // ✅ น้ำตาลเข้ม
                 ),
               ),
               const SizedBox(height: 10),
@@ -79,19 +74,18 @@ class _BodyFatPageState extends State<BodyFatPage> {
                 'Optional',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.white54,
+                  color: Color(0xFF9E9E9E), // ✅ เทาอ่อน
                   fontStyle: FontStyle.italic,
                 ),
               ),
-              const SizedBox(height: 60),
+              const SizedBox(height: 40),
 
-              // ส่วนที่ให้ Fade และ Disable
               Expanded(
                 child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 400),
-                  opacity: _isUnknown ? 0.2 : 1.0, // จางลงเมื่อไม่ทราบค่า
+                  opacity: _isUnknown ? 0.2 : 1.0,
                   child: IgnorePointer(
-                    ignoring: _isUnknown, // ห้ามกด/เลื่อนเมื่อไม่ทราบค่า
+                    ignoring: _isUnknown,
                     child: Row(
                       children: [
                         Expanded(
@@ -185,9 +179,12 @@ class _BodyFatPageState extends State<BodyFatPage> {
                                                       ? FontWeight.bold
                                                       : FontWeight.normal,
                                                   color: isSelected
-                                                      ? Colors.white
-                                                      : Colors.white
-                                                            .withOpacity(0.3),
+                                                      ? const Color(
+                                                          0xFF5D4037,
+                                                        ) // ✅ น้ำตาลเข้ม
+                                                      : const Color(
+                                                          0xFF9E9E9E,
+                                                        ), // ✅ เทาอ่อน
                                                 ),
                                               ),
                                             );
@@ -196,13 +193,13 @@ class _BodyFatPageState extends State<BodyFatPage> {
                                         ),
                                   ),
                                 ),
-                                Positioned(
+                                const Positioned(
                                   right: 10,
                                   child: Text(
                                     '%',
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: Colors.white.withOpacity(0.5),
+                                      color: Color(0xFF9E9E9E), // ✅ เทาอ่อน
                                     ),
                                   ),
                                 ),
@@ -216,7 +213,7 @@ class _BodyFatPageState extends State<BodyFatPage> {
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               // ปุ่ม I don't know แบบ Holder
               Center(
@@ -224,7 +221,6 @@ class _BodyFatPageState extends State<BodyFatPage> {
                   onTap: () {
                     setState(() {
                       _isUnknown = !_isUnknown;
-                      // ถ้า unknown ให้ส่ง 0.0 ถ้าไม่ unknown ให้ส่งค่าปัจจุบัน
                       widget.onSubmitted(_isUnknown ? 0.0 : _bodyFat);
                     });
                   },
@@ -236,11 +232,13 @@ class _BodyFatPageState extends State<BodyFatPage> {
                     ),
                     decoration: BoxDecoration(
                       color: _isUnknown
-                          ? Colors.blueAccent.withOpacity(0.2)
+                          ? const Color(0xFFFFC107).withOpacity(0.2)
                           : Colors.white.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: _isUnknown ? Colors.blueAccent : Colors.white24,
+                        color: _isUnknown
+                            ? const Color(0xFFFFC107)
+                            : Colors.white24,
                         width: 1.5,
                       ),
                     ),
@@ -250,15 +248,17 @@ class _BodyFatPageState extends State<BodyFatPage> {
                         Icon(
                           _isUnknown ? Icons.check_circle : Icons.help_outline,
                           color: _isUnknown
-                              ? Colors.blueAccent
-                              : Colors.white54,
+                              ? const Color(0xFF5D4037)
+                              : const Color(0xFF9E9E9E),
                           size: 20,
                         ),
                         const SizedBox(width: 15),
                         Text(
                           "I don't know my fat%",
                           style: TextStyle(
-                            color: _isUnknown ? Colors.white : Colors.white54,
+                            color: _isUnknown
+                                ? const Color(0xFF5D4037)
+                                : const Color(0xFF9E9E9E),
                             fontWeight: _isUnknown
                                 ? FontWeight.bold
                                 : FontWeight.normal,
@@ -270,7 +270,7 @@ class _BodyFatPageState extends State<BodyFatPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 60),
             ],
           ),
         ),

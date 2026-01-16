@@ -14,7 +14,6 @@ class _HeightPageState extends State<HeightPage> {
   @override
   void initState() {
     super.initState();
-    // ส่งค่า default ไปเลยตอนเริ่ม
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onSubmitted(_height);
       print("LOG: Default height submitted = $_height");
@@ -24,7 +23,7 @@ class _HeightPageState extends State<HeightPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1a1a2e),
+      backgroundColor: const Color(0xFFFFFBF5), // ✅ พื้นหลังขาวนวล
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -37,7 +36,7 @@ class _HeightPageState extends State<HeightPage> {
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w300,
-                  color: Colors.white70,
+                  color: Color(0xFF8D6E63), // ✅ น้ำตาลอ่อน
                 ),
               ),
               const Text(
@@ -45,7 +44,7 @@ class _HeightPageState extends State<HeightPage> {
                 style: TextStyle(
                   fontSize: 42,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Color(0xFF5D4037), // ✅ น้ำตาลเข้ม
                 ),
               ),
               const SizedBox(height: 60),
@@ -59,10 +58,12 @@ class _HeightPageState extends State<HeightPage> {
                         height: 80,
                         width: 200,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF6c5ce7).withOpacity(0.2),
+                          color: const Color(
+                            0xFFFFC107,
+                          ).withOpacity(0.2), // ✅ accent เหลือง
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: const Color(0xFF6c5ce7),
+                            color: const Color(0xFFFFC107), // ✅ accent เหลืองสด
                             width: 2,
                           ),
                         ),
@@ -100,8 +101,10 @@ class _HeightPageState extends State<HeightPage> {
                                         ? FontWeight.bold
                                         : FontWeight.normal,
                                     color: isSelected
-                                        ? Colors.white
-                                        : Colors.white.withOpacity(0.3),
+                                        ? const Color(
+                                            0xFF5D4037,
+                                          ) // ✅ น้ำตาลเข้ม
+                                        : const Color(0xFF9E9E9E), // ✅ เทาอ่อน
                                   ),
                                 ),
                               );
@@ -113,11 +116,11 @@ class _HeightPageState extends State<HeightPage> {
                       // Label "cm"
                       Positioned(
                         right: 40,
-                        child: Text(
+                        child: const Text(
                           'cm',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.white.withOpacity(0.5),
+                            color: Color(0xFF9E9E9E), // ✅ เทาอ่อน
                           ),
                         ),
                       ),

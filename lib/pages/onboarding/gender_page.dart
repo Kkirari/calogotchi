@@ -15,14 +15,16 @@ class _GenderPageState extends State<GenderPage> {
     setState(() {
       selectedGender = gender;
     });
-    widget.onSelected(gender); // ✅ ส่งค่าไป OnboardingFlow
-    print("LOG: Gender selected = $gender"); // ✅ log
+    widget.onSelected(gender);
+    print("LOG: Gender selected = $gender");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1a1a2e),
+      backgroundColor: const Color(
+        0xFFFFFBF5,
+      ), // ✅ พื้นหลังขาวนวลเหมือน GoalPage
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -35,7 +37,7 @@ class _GenderPageState extends State<GenderPage> {
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w300,
-                  color: Colors.white70,
+                  color: Color(0xFF8D6E63), // ✅ น้ำตาลอ่อน
                 ),
               ),
               const Text(
@@ -43,7 +45,7 @@ class _GenderPageState extends State<GenderPage> {
                 style: TextStyle(
                   fontSize: 42,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Color(0xFF5D4037), // ✅ น้ำตาลเข้ม
                 ),
               ),
               const SizedBox(height: 60),
@@ -56,7 +58,7 @@ class _GenderPageState extends State<GenderPage> {
                           icon: Icons.male,
                           label: 'Male',
                           isSelected: selectedGender == 'Male',
-                          selectedColor: const Color(0xFF4A90E2),
+                          selectedColor: const Color(0xFF4A90E2), // ✅ เหลืองทอง
                           onTap: () => _selectGender('Male'),
                         ),
                       ),
@@ -66,7 +68,9 @@ class _GenderPageState extends State<GenderPage> {
                           icon: Icons.female,
                           label: 'Female',
                           isSelected: selectedGender == 'Female',
-                          selectedColor: const Color(0xFFE91E63),
+                          selectedColor: const Color(
+                            0xFFE91E63,
+                          ), // ✅ เหลืองอ่อน
                           onTap: () => _selectGender('Female'),
                         ),
                       ),
@@ -74,7 +78,7 @@ class _GenderPageState extends State<GenderPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 150),
+              const SizedBox(height: 100),
             ],
           ),
         ),
@@ -103,15 +107,25 @@ class _GenderCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 300),
         height: 180,
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isSelected ? selectedColor : const Color(0xFF16213e),
+          color: isSelected ? selectedColor.withOpacity(0.15) : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? selectedColor : Colors.white.withOpacity(0.1),
+            color: isSelected ? selectedColor : const Color(0xFFE0E0E0),
             width: 2,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: isSelected
+                  ? selectedColor.withOpacity(0.3)
+                  : Colors.black.withOpacity(0.05),
+              blurRadius: isSelected ? 12 : 6,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -119,15 +133,17 @@ class _GenderCard extends StatelessWidget {
             Icon(
               icon,
               size: 72,
-              color: isSelected ? Colors.white : Colors.white54,
+              color: isSelected ? selectedColor : const Color(0xFF757575),
             ),
             const SizedBox(height: 16),
             Text(
               label,
               style: TextStyle(
                 fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: isSelected ? Colors.white : Colors.white70,
+                fontWeight: FontWeight.bold,
+                color: isSelected
+                    ? const Color(0xFF5D4037) // น้ำตาลเข้ม
+                    : const Color(0xFF757575), // เทา
               ),
             ),
           ],

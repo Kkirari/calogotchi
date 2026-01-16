@@ -14,7 +14,6 @@ class _AgePageState extends State<AgePage> {
   @override
   void initState() {
     super.initState();
-    // ส่งค่า default ไปเลยตอนเริ่ม
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onSubmitted(_age.round());
       print("LOG: Default age submitted = ${_age.round()}");
@@ -24,7 +23,7 @@ class _AgePageState extends State<AgePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1a1a2e),
+      backgroundColor: const Color(0xFFFFFBF5), // ✅ พื้นหลังขาวนวล
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -37,7 +36,7 @@ class _AgePageState extends State<AgePage> {
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w300,
-                  color: Colors.white70,
+                  color: Color(0xFF8D6E63), // ✅ น้ำตาลอ่อน
                 ),
               ),
               const Text(
@@ -45,7 +44,7 @@ class _AgePageState extends State<AgePage> {
                 style: TextStyle(
                   fontSize: 42,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Color(0xFF5D4037), // ✅ น้ำตาลเข้ม
                 ),
               ),
               const SizedBox(height: 60),
@@ -58,10 +57,12 @@ class _AgePageState extends State<AgePage> {
                         height: 80,
                         width: 150,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF6c5ce7).withOpacity(0.2),
+                          color: const Color(
+                            0xFFFFC107,
+                          ).withOpacity(0.2), // ✅ accent เหลือง
                           borderRadius: BorderRadius.circular(100),
                           border: Border.all(
-                            color: const Color(0xFF6c5ce7),
+                            color: const Color(0xFFFFC107), // ✅ accent เหลืองสด
                             width: 2,
                           ),
                         ),
@@ -70,7 +71,7 @@ class _AgePageState extends State<AgePage> {
                         height: 300,
                         child: ListWheelScrollView.useDelegate(
                           controller: FixedExtentScrollController(
-                            initialItem: 20, // 30 - 10 = index 20
+                            initialItem: 20,
                           ),
                           itemExtent: 80,
                           perspective: 0.003,
@@ -99,13 +100,15 @@ class _AgePageState extends State<AgePage> {
                                         ? FontWeight.bold
                                         : FontWeight.normal,
                                     color: isSelected
-                                        ? Colors.white
-                                        : Colors.white.withOpacity(0.3),
+                                        ? const Color(
+                                            0xFF5D4037,
+                                          ) // ✅ น้ำตาลเข้ม
+                                        : const Color(0xFF9E9E9E), // ✅ เทาอ่อน
                                   ),
                                 ),
                               );
                             },
-                            childCount: 91, // 10-100
+                            childCount: 91,
                           ),
                         ),
                       ),
@@ -113,9 +116,9 @@ class _AgePageState extends State<AgePage> {
                         right: 30,
                         child: Text(
                           'Years old',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
-                            color: Colors.white.withOpacity(0.5),
+                            color: Color(0xFF9E9E9E), // ✅ เทาอ่อน
                           ),
                         ),
                       ),

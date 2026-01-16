@@ -14,7 +14,9 @@ class UserPrefs {
 
   static Future<Map<String, dynamic>?> loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
+    // เช็คว่ามีข้อมูลพื้นฐานไหม ถ้าไม่มีให้ถือว่ายังไม่ได้ทำ Onboarding
     if (!prefs.containsKey('gender')) return null;
+
     return {
       'gender': prefs.getString('gender'),
       'age': prefs.getInt('age'),
@@ -22,6 +24,8 @@ class UserPrefs {
       'height': prefs.getDouble('height'),
       'activity': prefs.getString('activity'),
       'bodyfat': prefs.getDouble('bodyfat'),
+      'goal': prefs.getString('goal'), // เพิ่มใหม่
+      'goalPercentage': prefs.getDouble('goalPercentage'), // เพิ่มใหม่
       'tdee': prefs.getDouble('tdee'),
     };
   }

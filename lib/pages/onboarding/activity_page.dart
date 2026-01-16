@@ -45,7 +45,7 @@ class _ActivityPageState extends State<ActivityPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1a1a2e),
+      backgroundColor: const Color(0xFFFFFBF5), // ✅ พื้นหลังขาวนวล
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -58,7 +58,7 @@ class _ActivityPageState extends State<ActivityPage> {
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w300,
-                  color: Colors.white70,
+                  color: Color(0xFF8D6E63), // ✅ น้ำตาลอ่อน
                 ),
               ),
               const Text(
@@ -66,7 +66,7 @@ class _ActivityPageState extends State<ActivityPage> {
                 style: TextStyle(
                   fontSize: 42,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Color(0xFF5D4037), // ✅ น้ำตาลเข้ม
                 ),
               ),
               const SizedBox(height: 60),
@@ -132,16 +132,27 @@ class _ActivityCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF6c5ce7) : const Color(0xFF16213e),
+          color: isSelected
+              ? const Color(0xFFFFC107).withOpacity(0.15)
+              : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF6c5ce7)
-                : Colors.white.withOpacity(0.1),
+                ? const Color(0xFFFFC107)
+                : const Color(0xFFE0E0E0),
             width: 2,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: isSelected
+                  ? const Color(0xFFFFC107).withOpacity(0.3)
+                  : Colors.black.withOpacity(0.05),
+              blurRadius: isSelected ? 12 : 6,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -151,7 +162,9 @@ class _ActivityCard extends StatelessWidget {
               Icon(
                 icon,
                 size: 56,
-                color: isSelected ? Colors.white : Colors.white54,
+                color: isSelected
+                    ? const Color(0xFF5D4037)
+                    : const Color(0xFF9E9E9E),
               ),
               const SizedBox(height: 16),
               Text(
@@ -160,7 +173,9 @@ class _ActivityCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: isSelected ? Colors.white : Colors.white70,
+                  color: isSelected
+                      ? const Color(0xFF5D4037)
+                      : const Color(0xFF757575),
                 ),
               ),
               const SizedBox(height: 4),
@@ -170,8 +185,8 @@ class _ActivityCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13,
                   color: isSelected
-                      ? Colors.white.withOpacity(0.8)
-                      : Colors.white.withOpacity(0.5),
+                      ? const Color(0xFF8D6E63)
+                      : const Color(0xFF9E9E9E),
                 ),
               ),
               Text(
@@ -180,8 +195,8 @@ class _ActivityCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   color: isSelected
-                      ? Colors.white.withOpacity(0.8)
-                      : Colors.white.withOpacity(0.5),
+                      ? const Color(0xFF8D6E63)
+                      : const Color(0xFF9E9E9E),
                 ),
               ),
             ],
