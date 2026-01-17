@@ -1,10 +1,10 @@
-import 'package:Calogotchi/pages/onboarding/onboarding_flow.dart';
 import 'package:flutter/material.dart';
+import 'package:Calogotchi/pages/onboarding/onboarding_flow.dart';
 import '../services/user_prefs.dart';
 import '../utils/tdee_calculator.dart';
 
-class DisplayPage extends StatelessWidget {
-  const DisplayPage({super.key});
+class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,20 +34,20 @@ class DisplayPage extends StatelessWidget {
           final data = snapshot.data;
           if (data == null) return const Center(child: Text("No Data"));
 
-          // 1. คำนวณค่า Maintenance (ค่าเดิมก่อนลด/เพิ่ม)
-          final maintenanceTdee = TdeeCalculator.calculate(
+          // 1. Maintenance TDEE
+          final maintenanceData = TdeeCalculator.calculate(
             gender: data['gender'] ?? 'Male',
             age: data['age'] ?? 25,
             weight: data['weight'] ?? 60.0,
             height: data['height'] ?? 170.0,
             activity: data['activity'] ?? 'Sedentary',
             bodyfat: data['bodyfat'] ?? 0.0,
-            goal: 'Maintain Weight', // บังคับเป็น Maintain เพื่อหาค่าตั้งต้น
+            goal: 'Maintain Weight',
             goalPercentage: 0.0,
           );
 
-          // 2. คำนวณค่า Target (ค่าที่ปรับตาม Goal แล้ว)
-          final targetTdee = TdeeCalculator.calculate(
+          // 2. Target TDEE + Macros
+          final targetData = TdeeCalculator.calculate(
             gender: data['gender'] ?? 'Male',
             age: data['age'] ?? 25,
             weight: data['weight'] ?? 60.0,
@@ -62,16 +62,21 @@ class DisplayPage extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                // แสดงการเปรียบเทียบ TDEE
+                // TDEE Comparison
                 _buildTdeeComparisonCard(
-                  maintenance: maintenanceTdee,
-                  target: targetTdee,
+                  maintenance: maintenanceData['TDEE']!,
+                  target: targetData['TDEE']!,
                   goal: data['goal'] ?? 'Maintain Weight',
                 ),
 
                 const SizedBox(height: 25),
 
-                // ข้อมูลรายละเอียดอื่นๆ
+                // Macro Breakdown
+                _buildMacroCard(targetData),
+
+                const SizedBox(height: 25),
+
+                // Info Tiles
                 _buildInfoTile(
                   Icons.track_changes,
                   "Current Goal",
@@ -123,7 +128,7 @@ class DisplayPage extends StatelessWidget {
     );
   }
 
-  // Widget แสดง Card เปรียบเทียบแคลอรี่
+  // Card เปรียบเทียบ TDEE
   Widget _buildTdeeComparisonCard({
     required double maintenance,
     required double target,
@@ -160,7 +165,6 @@ class DisplayPage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              // ฝั่งค่าปกติ
               Column(
                 children: [
                   const Text(
@@ -182,12 +186,7 @@ class DisplayPage extends StatelessWidget {
                   ),
                 ],
               ),
-              // ไอคอนบ่งบอกทิศทาง
-              Icon(
-                isReduction ? Icons.arrow_forward : Icons.arrow_forward,
-                color: Colors.grey[300],
-              ),
-              // ฝั่งเป้าหมาย (เด่นกว่า)
+              Icon(Icons.arrow_forward, color: Colors.grey[300]),
               Column(
                 children: [
                   Text(
@@ -218,7 +217,6 @@ class DisplayPage extends StatelessWidget {
           const SizedBox(height: 20),
           const Divider(),
           const SizedBox(height: 10),
-          // บรรทัดสรุปผลต่าง
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -240,6 +238,58 @@ class DisplayPage extends StatelessWidget {
     );
   }
 
+  // Card แสดง Macro Breakdown
+  Widget _buildMacroCard(Map<String, double> macros) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Macro Breakdown",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF5D4037),
+            ),
+          ),
+          const SizedBox(height: 15),
+          _buildInfoTile(
+            Icons.fitness_center,
+            "Protein",
+            "${macros['Protein']!.toStringAsFixed(0)} g",
+            Colors.redAccent,
+          ),
+          _buildInfoTile(
+            Icons.local_pizza,
+            "Fat",
+            "${macros['Fat']!.toStringAsFixed(0)} g",
+            Colors.orange,
+          ),
+          _buildInfoTile(
+            Icons.rice_bowl,
+            "Carbs",
+            "${macros['Carbs']!.toStringAsFixed(0)} g",
+            Colors.blue,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Tile แสดงข้อมูลทั่วไป
   Widget _buildInfoTile(
     IconData icon,
     String label,

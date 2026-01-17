@@ -43,8 +43,8 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
         curve: Curves.easeInOut,
       );
     } else {
-      // --- ขั้นตอนสุดท้าย: คำนวณ TDEE ก่อนบันทึก ---
-      double finalTdee = TdeeCalculator.calculate(
+      // --- ขั้นตอนสุดท้าย: คำนวณ TDEE + Macro ก่อนบันทึก ---
+      final result = TdeeCalculator.calculate(
         gender: _userData['gender'],
         age: _userData['age'],
         weight: _userData['weight'],
@@ -55,10 +55,18 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
         goalPercentage: _userData['goalPercentage'],
       );
 
-      _userData['tdee'] = finalTdee;
+      // บันทึกทั้ง TDEE และ Macro ลงใน _userData
+      _userData['tdee'] = result['TDEE'];
+      _userData['protein'] = result['Protein'];
+      _userData['fat'] = result['Fat'];
+      _userData['carbs'] = result['Carbs'];
+
       await UserPrefs.saveUserData(_userData);
 
-      print("LOG: Onboarding Finished. Calculated TDEE: $finalTdee");
+      print("LOG: Onboarding Finished. Calculated TDEE: ${result['TDEE']}");
+      print(
+        "LOG: Macros -> Protein: ${result['Protein']} g, Fat: ${result['Fat']} g, Carbs: ${result['Carbs']} g",
+      );
 
       if (!mounted) return;
       Navigator.pushReplacement(

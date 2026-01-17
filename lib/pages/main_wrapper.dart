@@ -1,7 +1,9 @@
+import 'package:Calogotchi/pages/logMealPage/log_custom_meal.dart';
+import 'package:Calogotchi/pages/test_page.dart';
 import 'package:flutter/material.dart';
-import 'package:Calogotchi/pages/test_page2.dart';
-import 'display_page.dart';
-import 'test_page.dart';
+import 'package:Calogotchi/pages/history_page.dart';
+import 'profile_page.dart';
+import 'main_display.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});
@@ -14,10 +16,10 @@ class _MainWrapperState extends State<MainWrapper> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    const Center(child: Text("Home Content")), // หน้า 0
-    const DisplayPage(), // หน้า 1
-    const TestPage(), // หน้า 2
-    const TestPage2(), // หน้า 3
+    const MainDisplay(), // หน้า 0
+    const ProfilePage(), // หน้า 1
+    const HistoryPage(), // หน้า 2
+    const TestPage(), // หน้า 3
   ];
 
   // ฟังก์ชันสร้าง Card Button สำหรับใช้ใน Slider
@@ -91,7 +93,7 @@ class _MainWrapperState extends State<MainWrapper> {
           width: double.infinity,
           height:
               MediaQuery.of(context).size.height *
-              0.65, // ความสูงประมาณ 65% ของจอ
+              0.40, // ความสูงประมาณ 65% ของจอ
           decoration: const BoxDecoration(
             color: Color(0xFFF8F9FA), // สีเทาอ่อนให้ Card สีขาวเด่นขึ้น
             borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
@@ -110,7 +112,7 @@ class _MainWrapperState extends State<MainWrapper> {
               ),
               const SizedBox(height: 25),
               const Text(
-                "Choose Action",
+                "Add your Meal log",
                 style: TextStyle(fontSize: 24, color: Color(0xFF4E342E)),
               ),
               const SizedBox(height: 20),
@@ -120,28 +122,23 @@ class _MainWrapperState extends State<MainWrapper> {
                   children: [
                     _buildMenuCard(
                       icon: Icons.camera_alt,
-                      title: "Scan Meal",
+                      title: "Scan Meal via AI",
                       color: Colors.redAccent,
-                      onTap: () => Navigator.pop(context),
-                    ),
-                    _buildMenuCard(
-                      icon: Icons.search,
-                      title: "Meal in Database",
-                      color: Colors.blueAccent,
-                      onTap: () => Navigator.pop(context),
-                    ),
-                    _buildMenuCard(
-                      icon: Icons.fitness_center,
-                      title: "Add Activity",
-                      color: Colors.orangeAccent,
                       onTap: () => Navigator.pop(context),
                     ),
                     _buildMenuCard(
                       icon: Icons.edit_note,
                       title: "Custom Meal",
                       color: Colors.greenAccent,
-                      onTap: () => Navigator.pop(context),
+                      onTap: () {
+                        Navigator.pop(context); // ปิด BottomSheet ก่อน
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const CustomMeal()),
+                        );
+                      },
                     ),
+
                     const SizedBox(height: 30),
                   ],
                 ),
@@ -190,8 +187,8 @@ class _MainWrapperState extends State<MainWrapper> {
 
               const SizedBox(width: 40), // ช่องว่างให้ปุ่ม FAB
               // เมนูฝั่งขวา
-              _buildNavItem(Icons.science, "Test", 2),
-              _buildNavItem(Icons.fitness_center, "Test2", 3),
+              _buildNavItem(Icons.history, "History", 2),
+              _buildNavItem(Icons.fitness_center, "Test", 3),
             ],
           ),
         ),

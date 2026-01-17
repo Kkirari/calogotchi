@@ -1,16 +1,15 @@
 class TdeeCalculator {
-  static double calculate({
+  static Map<String, double> calculate({
     required String gender,
     required int age,
     required double weight,
     required double height,
     required String activity,
     double bodyfat = 0.0,
-    required String goal, // เพิ่มตัวแปรเป้าหมาย
-    required double goalPercentage, // เพิ่ม % ความเข้มข้น
+    required String goal,
+    required double goalPercentage,
   }) {
     double bmr;
-    // 1. คำนวณ BMR (สูตรเดิมของคุณ)
     if (bodyfat > 0) {
       final leanMass = weight * (1 - bodyfat / 100);
       bmr = 370 + (21.6 * leanMass);
@@ -22,7 +21,6 @@ class TdeeCalculator {
       }
     }
 
-    // 2. คำนวณ Maintenance Calories (TDEE พื้นฐาน)
     double factor = 1.2;
     switch (activity) {
       case 'Lightly Active':
@@ -37,16 +35,29 @@ class TdeeCalculator {
     }
     double maintenanceTdee = bmr * factor;
 
-    // 3. ปรับแต่งตามเป้าหมาย (Goal Adjustment)
     double finalTdee = maintenanceTdee;
     if (goal == 'Lose Weight') {
-      // ลดพลังงานลงตาม % (Caloric Deficit)
       finalTdee = maintenanceTdee - (maintenanceTdee * (goalPercentage / 100));
     } else if (goal == 'Gain Muscle') {
-      // เพิ่มพลังงานขึ้นตาม % (Caloric Surplus)
       finalTdee = maintenanceTdee + (maintenanceTdee * (goalPercentage / 100));
     }
 
-    return finalTdee;
+    // Macro Split
+    double proteinPerKg = (goal == 'Gain Muscle') ? 2.2 : 1.8;
+    double proteinGrams = proteinPerKg * weight;
+    double proteinCalories = proteinGrams * 4;
+
+    double fatCalories = finalTdee * 0.25;
+    double fatGrams = fatCalories / 9;
+
+    double carbCalories = finalTdee - (proteinCalories + fatCalories);
+    double carbGrams = carbCalories / 4;
+
+    return {
+      'TDEE': finalTdee,
+      'Protein': proteinGrams,
+      'Fat': fatGrams,
+      'Carbs': carbGrams,
+    };
   }
 }
