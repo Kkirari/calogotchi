@@ -1,35 +1,27 @@
-import 'package:calogotchi/pages/onboarding/onboarding_flow.dart';
+import 'package:Calogotchi/pages/main_wrapper.dart';
+import 'package:Calogotchi/pages/onboarding/onboarding_flow.dart';
 import 'package:flutter/material.dart';
-import 'pages/display_page.dart';
 import 'services/user_prefs.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // เช็คว่ามีข้อมูลในเครื่องไหม
+  final userData = await UserPrefs.loadUserData();
+
+  runApp(MyApp(showOnboarding: userData == null));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool showOnboarding;
+  const MyApp({super.key, required this.showOnboarding});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Calorie Counter',
       debugShowCheckedModeBanner: false,
-      home: FutureBuilder<Map<String, dynamic>?>(
-        future: UserPrefs.loadUserData(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-          if (snapshot.data == null) {
-            return const OnboardingFlow();
-          } else {
-            return const DisplayPage();
-          }
-        },
-      ),
+      // ถ้าไม่มีข้อมูลให้ไป Onboarding ถ้ามีแล้วให้ไปหน้าหลัก (MainWrapper)
+      home: showOnboarding ? const OnboardingFlow() : const MainWrapper(),
     );
   }
 }

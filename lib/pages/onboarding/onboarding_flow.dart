@@ -1,7 +1,7 @@
+import 'package:Calogotchi/pages/main_wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:calogotchi/pages/display_page.dart';
-import 'package:calogotchi/services/user_prefs.dart';
-import 'package:calogotchi/utils/tdee_calculator.dart';
+import 'package:Calogotchi/services/user_prefs.dart';
+import 'package:Calogotchi/utils/tdee_calculator.dart';
 
 // Import หน้าต่างๆ
 import 'goal_page.dart';
@@ -63,7 +63,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const DisplayPage()),
+        MaterialPageRoute(builder: (_) => const MainWrapper()),
       );
     }
   }

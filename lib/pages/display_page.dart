@@ -1,3 +1,4 @@
+import 'package:Calogotchi/pages/onboarding/onboarding_flow.dart';
 import 'package:flutter/material.dart';
 import '../services/user_prefs.dart';
 import '../utils/tdee_calculator.dart';
@@ -8,37 +9,45 @@ class DisplayPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1a1a2e), // ธีมเดียวกับ Onboarding
+      backgroundColor: const Color(0xFFFFFBF5),
       appBar: AppBar(
         title: const Text(
-          'Your Profile',
-          style: TextStyle(color: Colors.white),
+          'My Profile',
+          style: TextStyle(
+            color: Color(0xFF5D4037),
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        centerTitle: true,
       ),
       body: FutureBuilder<Map<String, dynamic>?>(
         future: UserPrefs.loadUserData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(
-              child: CircularProgressIndicator(color: Colors.blueAccent),
+              child: CircularProgressIndicator(color: Color(0xFFFFC107)),
             );
           }
 
           final data = snapshot.data;
-          if (data == null) {
-            return const Center(
-              child: Text(
-                'No data found',
-                style: TextStyle(color: Colors.white),
-              ),
-            );
-          }
+          if (data == null) return const Center(child: Text("No Data"));
 
-          // คำนวณ TDEE ใหม่โดยรวมเป้าหมายเข้าไปด้วย
-          final tdee = TdeeCalculator.calculate(
+          // 1. คำนวณค่า Maintenance (ค่าเดิมก่อนลด/เพิ่ม)
+          final maintenanceTdee = TdeeCalculator.calculate(
+            gender: data['gender'] ?? 'Male',
+            age: data['age'] ?? 25,
+            weight: data['weight'] ?? 60.0,
+            height: data['height'] ?? 170.0,
+            activity: data['activity'] ?? 'Sedentary',
+            bodyfat: data['bodyfat'] ?? 0.0,
+            goal: 'Maintain Weight', // บังคับเป็น Maintain เพื่อหาค่าตั้งต้น
+            goalPercentage: 0.0,
+          );
+
+          // 2. คำนวณค่า Target (ค่าที่ปรับตาม Goal แล้ว)
+          final targetTdee = TdeeCalculator.calculate(
             gender: data['gender'] ?? 'Male',
             age: data['age'] ?? 25,
             weight: data['weight'] ?? 60.0,
@@ -52,84 +61,58 @@ class DisplayPage extends StatelessWidget {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ส่วนแสดงผล TDEE ใหญ่ๆ
-                _buildTdeeCard(tdee, data['goal'] ?? 'Maintain Weight'),
-
-                const SizedBox(height: 30),
-                const Text(
-                  "User Details",
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                // แสดงการเปรียบเทียบ TDEE
+                _buildTdeeComparisonCard(
+                  maintenance: maintenanceTdee,
+                  target: targetTdee,
+                  goal: data['goal'] ?? 'Maintain Weight',
                 ),
-                const SizedBox(height: 15),
 
-                // ข้อมูลเป้าหมาย
+                const SizedBox(height: 25),
+
+                // ข้อมูลรายละเอียดอื่นๆ
                 _buildInfoTile(
                   Icons.track_changes,
-                  "Goal",
-                  "${data['goal']} (${data['goalPercentage']?.round() ?? 0}%)",
-                  Colors.orangeAccent,
-                ),
-
-                // ข้อมูลร่างกาย
-                _buildInfoTile(
-                  Icons.person,
-                  "Gender",
-                  data['gender'],
-                  Colors.blueAccent,
-                ),
-                _buildInfoTile(
-                  Icons.cake,
-                  "Age",
-                  "${data['age']} years old",
-                  Colors.purpleAccent,
+                  "Current Goal",
+                  "${data['goal']}",
+                  const Color(0xFFFFC107),
                 ),
                 _buildInfoTile(
                   Icons.monitor_weight,
-                  "Weight",
+                  "Current Weight",
                   "${data['weight']} kg",
-                  Colors.greenAccent,
+                  Colors.green,
                 ),
                 _buildInfoTile(
                   Icons.height,
                   "Height",
                   "${data['height']} cm",
-                  Colors.cyanAccent,
+                  Colors.blue,
                 ),
                 _buildInfoTile(
-                  Icons.directions_run,
-                  "Activity",
-                  data['activity'],
-                  Colors.yellowAccent,
-                ),
-                _buildInfoTile(
-                  Icons.percent,
-                  "Body Fat",
-                  data['bodyfat'] > 0 ? "${data['bodyfat']}%" : "Unknown",
-                  Colors.redAccent,
+                  Icons.cake,
+                  "Age",
+                  "${data['age']} years old",
+                  Colors.orange,
                 ),
 
                 const SizedBox(height: 40),
 
-                // ปุ่มกลับไปแก้ไข (ถ้าต้องการ)
-                Center(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.of(
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
                       context,
-                    ).pop(), // หรือ Navigate ไปหน้า Onboarding ใหม่
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.white54,
-                      side: const BorderSide(color: Colors.white24),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      MaterialPageRoute(builder: (_) => const OnboardingFlow()),
+                      (route) => false,
+                    );
+                  },
+                  child: const Text(
+                    "Reset Profile Data",
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.bold,
                     ),
-                    child: const Text("Edit Information"),
                   ),
                 ),
               ],
@@ -140,100 +123,157 @@ class DisplayPage extends StatelessWidget {
     );
   }
 
-  // Widget สำหรับแสดงบัตร TDEE
-  Widget _buildTdeeCard(double tdee, String goal) {
+  // Widget แสดง Card เปรียบเทียบแคลอรี่
+  Widget _buildTdeeComparisonCard({
+    required double maintenance,
+    required double target,
+    required String goal,
+  }) {
+    double diff = target - maintenance;
+    bool isReduction = diff < 0;
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF4A90E2), Color(0xFF6c5ce7)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6c5ce7).withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: Column(
         children: [
           const Text(
-            "DAILY TARGET",
+            "Daily Calorie Summary",
             style: TextStyle(
-              color: Colors.white70,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
+              fontSize: 16,
+              color: Colors.grey,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 10),
-          Text(
-            "${tdee.toStringAsFixed(0)} kcal",
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              goal.toUpperCase(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              // ฝั่งค่าปกติ
+              Column(
+                children: [
+                  const Text(
+                    "Maintenance",
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    "${maintenance.toStringAsFixed(0)}",
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF8D6E63),
+                    ),
+                  ),
+                  const Text(
+                    "kcal",
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
               ),
-            ),
+              // ไอคอนบ่งบอกทิศทาง
+              Icon(
+                isReduction ? Icons.arrow_forward : Icons.arrow_forward,
+                color: Colors.grey[300],
+              ),
+              // ฝั่งเป้าหมาย (เด่นกว่า)
+              Column(
+                children: [
+                  Text(
+                    "Target",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: isReduction ? Colors.redAccent : Colors.green,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    "${target.toStringAsFixed(0)}",
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: isReduction ? Colors.redAccent : Colors.green,
+                    ),
+                  ),
+                  const Text(
+                    "kcal",
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          const Divider(),
+          const SizedBox(height: 10),
+          // บรรทัดสรุปผลต่าง
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                isReduction ? "Deficit: " : "Surplus: ",
+                style: const TextStyle(color: Colors.grey),
+              ),
+              Text(
+                "${diff.abs().toStringAsFixed(0)} kcal / day",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: isReduction ? Colors.redAccent : Colors.green,
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  // Widget สำหรับแสดงแถวข้อมูลแต่ละอัน
   Widget _buildInfoTile(
     IconData icon,
     String label,
     String value,
-    Color iconColor,
+    Color color,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFF16213e),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.grey.withOpacity(0.1)),
       ),
-      child: Row(
-        children: [
-          Icon(icon, color: iconColor, size: 24),
-          const SizedBox(width: 16),
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white54, fontSize: 14),
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
           ),
-          const Spacer(),
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+          child: Icon(icon, color: color),
+        ),
+        title: Text(
+          label,
+          style: const TextStyle(fontSize: 14, color: Colors.grey),
+        ),
+        trailing: Text(
+          value,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: Color(0xFF5D4037),
           ),
-        ],
+        ),
       ),
     );
   }
