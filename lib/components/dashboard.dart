@@ -9,102 +9,103 @@ class DashboardBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ใช้ Future.wait เพื่อโหลดข้อมูล 2 อย่างพร้อมกัน
-    return FutureBuilder<List<dynamic>>(
-      future: Future.wait([
-        UserPrefs.loadUserData(),
-        MealLogService.getMealsByDate(DateTime.now()), // ดึงรายการอาหารวันนี้
-      ]),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(
-            child: CircularProgressIndicator(color: Color(0xFFFFC107)),
-          );
-        }
+    // ✅ 1. ใช้ ValueListenableBuilder ครอบ FutureBuilder
+    // เมื่อ MealLogService.refreshTrigger มีการเปลี่ยนแปลง มันจะสั่งสร้าง FutureBuilder ใหม่ทันที
+    return ValueListenableBuilder<int>(
+      valueListenable: MealLogService.refreshTrigger,
+      builder: (context, triggerValue, child) {
+        return FutureBuilder<List<dynamic>>(
+          // ✅ 2. ใส่ Key โดยใช้ค่า triggerValue เพื่อบังคับให้ FutureBuilder รีเซ็ตและโหลดใหม่จริงๆ
+          key: ValueKey(triggerValue),
+          future: Future.wait([
+            UserPrefs.loadUserData(),
+            MealLogService.getMealsByDate(DateTime.now()),
+          ]),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Center(
+                child: CircularProgressIndicator(color: Color(0xFFFFC107)),
+              );
+            }
 
-        // snapshot.data[0] คือข้อมูลจาก UserPrefs
-        // snapshot.data[1] คือ List<MealLog> จาก MealLogService
-        final userData = snapshot.data?[0] as Map<String, dynamic>?;
-        final mealLogs = snapshot.data?[1] as List<MealLog>? ?? [];
+            final userData = snapshot.data?[0] as Map<String, dynamic>?;
+            final mealLogs = snapshot.data?[1] as List<MealLog>? ?? [];
 
-        if (userData == null) {
-          return const Center(child: Text("No Data"));
-        }
+            if (userData == null) {
+              return const Center(child: Text("No Data"));
+            }
 
-        // --- 1. ดึงค่าเป้าหมายจาก SharedPreferences ---
-        final double targetCalories = userData['tdee'] ?? 2000.0;
-        final double targetProtein = userData['protein'] ?? 150.0;
-        final double targetFat = userData['fat'] ?? 65.0;
-        final double targetCarbs = userData['carbs'] ?? 250.0;
+            // --- คำนวณเป้าหมาย ---
+            final double targetCalories = userData['tdee'] ?? 2000.0;
+            final double targetProtein = userData['protein'] ?? 150.0;
+            final double targetFat = userData['fat'] ?? 65.0;
+            final double targetCarbs = userData['carbs'] ?? 250.0;
 
-        // --- 2. คำนวณค่าปัจจุบันจากรายการอาหารที่แอดมา ---
-        double currentCalories = 0;
-        double currentProtein = 0;
-        double currentFat = 0;
-        double currentCarbs = 0;
+            // --- คำนวณค่าปัจจุบัน ---
+            double currentCalories = 0;
+            double currentProtein = 0;
+            double currentFat = 0;
+            double currentCarbs = 0;
 
-        for (var meal in mealLogs) {
-          currentCalories += meal.calories;
-          currentProtein += meal.protein;
-          currentFat += meal.fat;
-          currentCarbs += meal.carbs;
-        }
+            for (var meal in mealLogs) {
+              currentCalories += meal.calories;
+              currentProtein += meal.protein;
+              currentFat += meal.fat;
+              currentCarbs += meal.carbs;
+            }
 
-        return Container(
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFFF9E6).withOpacity(0.95),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.15),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+            return Container(
+              width: double.infinity,
+              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF9E6).withOpacity(0.95),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // กราฟวงกลมแคลอรี่
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: _buildCircularCalorieProgress(
-                    currentCalories,
-                    targetCalories,
-                  ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: _buildCircularCalorieProgress(
+                        currentCalories,
+                        targetCalories,
+                      ),
+                    ),
+                    const SizedBox(width: 35),
+                    Expanded(
+                      child: _buildMacroBars(
+                        currentProtein,
+                        targetProtein,
+                        currentFat,
+                        targetFat,
+                        currentCarbs,
+                        targetCarbs,
+                      ),
+                    ),
+                  ],
                 ),
-
-                const SizedBox(width: 35),
-
-                // กราฟแท่งโปรตีน ไขมัน คาร์บ
-                Expanded(
-                  child: _buildMacroBars(
-                    currentProtein,
-                    targetProtein,
-                    currentFat,
-                    targetFat,
-                    currentCarbs,
-                    targetCarbs,
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
   }
 
-  // ส่วนอื่นๆ ของโค้ด (Painter, Helper Widgets) เหมือนเดิมได้เลยครับ...
-  // (ผมรวมไว้ให้ด้านล่างเพื่อความสมบูรณ์)
+  // ... (ฟังก์ชันอื่นๆ _buildCircularCalorieProgress, _buildMacroBars, CircleProgressPainter เหมือนเดิม) ...
+  // โค้ดด้านล่างนี้คุณสามารถใช้ตัวเดิมได้เลยครับ ผมไม่ได้เปลี่ยนแปลงอะไรในส่วนของ UI
 
   Widget _buildCircularCalorieProgress(double current, double target) {
     double progress = (current / target).clamp(0.0, 1.0);
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -261,32 +262,37 @@ class CircleProgressPainter extends CustomPainter {
   final double progress;
   final Color color;
   final double strokeWidth;
+
   CircleProgressPainter({
     required this.progress,
     required this.color,
-    this.strokeWidth = 10,
+    required this.strokeWidth,
   });
+
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = (size.width - strokeWidth) / 2;
-    final paint = Paint()
+    final Paint paint = Paint()
       ..color = color
       ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-    const startAngle = -math.pi / 2;
-    final sweepAngle = 2 * math.pi * progress;
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    final Offset center = Offset(size.width / 2, size.height / 2);
+    final double radius = (size.width - strokeWidth) / 2;
+
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
-      startAngle,
-      sweepAngle,
+      -math.pi / 2,
+      2 * math.pi * progress,
       false,
       paint,
     );
   }
 
   @override
-  bool shouldRepaint(CircleProgressPainter oldDelegate) =>
-      oldDelegate.progress != progress || oldDelegate.color != color;
+  bool shouldRepaint(CircleProgressPainter oldDelegate) {
+    return oldDelegate.progress != progress ||
+        oldDelegate.color != color ||
+        oldDelegate.strokeWidth != strokeWidth;
+  }
 }

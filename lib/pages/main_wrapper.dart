@@ -1,3 +1,4 @@
+import 'package:Calogotchi/pages/logMealPage/camera_page.dart';
 import 'package:Calogotchi/pages/logMealPage/log_custom_meal.dart';
 import 'package:Calogotchi/pages/test_page.dart';
 import 'package:flutter/material.dart';
@@ -124,7 +125,15 @@ class _MainWrapperState extends State<MainWrapper> {
                       icon: Icons.camera_alt,
                       title: "Scan Meal via AI",
                       color: Colors.redAccent,
-                      onTap: () => Navigator.pop(context),
+                      onTap: () {
+                        Navigator.pop(context); // ปิด BottomSheet ก่อน
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const CameraScanPage(),
+                          ),
+                        );
+                      },
                     ),
                     _buildMenuCard(
                       icon: Icons.edit_note,

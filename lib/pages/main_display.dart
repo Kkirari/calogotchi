@@ -58,15 +58,14 @@ class MainDisplay extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // --- Layer 1: Video Background ---
+          //--- Layer 1: Video Background ---
           // Positioned(
           //   top: 50,
           //   left: 0,
           //   right: 0,
           //   bottom: 0,
           //   child: const AnimationPlayer(
-          //     // assetPath: 'assets/animation/idle.mp4', // ✅ ใช้ path ได้ง่าย
-          //     assetPath: '', // ✅ ใช้ path ได้ง่าย
+          //     assetPath: 'assets/animation/idle.mp4', // ✅ ใช้ path ได้ง่าย
           //   ),
           // ),
 
@@ -76,33 +75,6 @@ class MainDisplay extends StatelessWidget {
             left: 0,
             right: 0,
             child: SafeArea(bottom: false, child: const DashboardBar()),
-          ),
-
-          // --- Layer 3: Bottom UI Content ---
-          SafeArea(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: const [
-                  Text(
-                    'Idle Mode',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 10,
-                          color: Colors.black,
-                          offset: Offset(2, 2),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 50),
-                ],
-              ),
-            ),
           ),
         ],
       ),

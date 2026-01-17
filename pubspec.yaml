@@ -9,12 +9,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_dotenv: ^5.1.0
   uuid: ^4.2.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   shared_preferences: ^2.2.2
   video_player: ^2.8.1
   image_picker: ^1.0.4
+  camera: ^0.10.5+5
+  google_generative_ai: ^0.4.6  
 
 dev_dependencies:
   flutter_test:
@@ -40,3 +43,4 @@ flutter:
     - assets/action/
     - assets/animation/idle.mp4
     - assets/icons/
+    - .env 

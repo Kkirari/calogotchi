@@ -17,9 +17,14 @@ class _HistoryPageState extends State<HistoryPage> {
   void initState() {
     super.initState();
     // Auto reload when page is opened
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {});
-    });
+    MealLogService.refreshTrigger.addListener(_refreshMeals);
+  }
+
+  @override
+  void dispose() {
+    // ✅ เลิกฟัง: เพื่อคืน Memory
+    MealLogService.refreshTrigger.removeListener(_refreshMeals);
+    super.dispose();
   }
 
   Future<List<MealLog>> _loadMeals() {
@@ -27,7 +32,9 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   void _refreshMeals() {
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _selectDate() async {
